@@ -1,4 +1,4 @@
-# Description
+# Markov matrices
 
 [Doubly stochastic matrix](https://en.wikipedia.org/wiki/Stochastic_matrix) generator/checker.
 
