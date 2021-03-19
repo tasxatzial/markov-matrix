@@ -1,30 +1,33 @@
-/* Create a N*N Markov matrix.
-   Check whether a N*N matrix is Markov. */
+/* Functionality:
+   1. Create a N*N Markov matrix (N <= 10)
+   2. Check whether a N*N matrix is Markov (N <= 10) */
 
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <math.h>
+#include <float.h>
 
-#define MAXN 10 /* max rows/columns */
+#define MAXN 10 /* max rows, columns */
+#define THRESHOLD 1e-12
 
-void readSquare(float [][MAXN], int N);
-int isMarkov(float [][MAXN], int N);
-void parseMarkov(float [][MAXN], int N);
-float sumRow(float [][MAXN], int N, int idx);
-float sumColumn(float [][MAXN], int N, int idx);
-void fillSquare(float [][MAXN], int N);
-void printSquare(float [][MAXN], int N);
-int invalidRow(float [][MAXN], int N, int idx);
-int invalidColumn(float [][MAXN], int N, int idx);
+void readSquare(double [][MAXN], int N);
+int isMarkov(double [][MAXN], int N);
+void parseMarkov(double [][MAXN], int N);
+double sumRow(double [][MAXN], int N, int idx);
+double sumColumn(double [][MAXN], int N, int idx);
+void fillSquare(double [][MAXN], int N);
+void printSquare(double [][MAXN], int N);
+int invalidRow(double [][MAXN], int N, int idx);
+int invalidColumn(double [][MAXN], int N, int idx);
 
 
 int main(int argc, char **argv) {
     int N;
-    float square[MAXN][MAXN];
+    double square[MAXN][MAXN];
 
-    /* program argument -create: generate and print a Markov matrix that
-       has 4 decimal digits */
+    /* program argument -create: generate and print a Markov matrix */
     if (argc == 3) {
         if (strcmp(argv[1], "-create") == 0) {
             N = atoi(argv[2]);
@@ -64,19 +67,19 @@ int main(int argc, char **argv) {
 }
 
 /* Reads a N*N matrix from stdin */
-void readSquare(float square[][MAXN], int N) {
+void readSquare(double square[][MAXN], int N) {
     int i, j;
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            scanf("%f", &square[i][j]);
+            scanf("%lf", &square[i][j]);
         }
     }
 }
 
 /* Checks whether a N*N matrix is a Markov matrix.
 Returns: 1 if matrix is Markov, 0 otherwise. */
-int isMarkov(float square[][MAXN], int N) {
+int isMarkov(double square[][MAXN], int N) {
     int i;
 
     for (i = 0; i < N; i++) {
@@ -89,7 +92,7 @@ int isMarkov(float square[][MAXN], int N) {
 
 /* For each row/column of a Markov matrix, it prints to stdout whether it
    is valid or not */
-void parseMarkov(float square[][MAXN], int N) {
+void parseMarkov(double square[][MAXN], int N) {
     int i;
 
     for (i = 0; i < N; i++) {
@@ -103,8 +106,8 @@ void parseMarkov(float square[][MAXN], int N) {
 }
 
 /* Returns the sum of entries of the row that has index idx */
-float sumRow(float square[][MAXN], int N, int idx) {
-    float sum = 0.0;
+double sumRow(double square[][MAXN], int N, int idx) {
+    double sum = 0.0;
     int column;
 
     for (column = 0; column < N; column++) {
@@ -114,8 +117,8 @@ float sumRow(float square[][MAXN], int N, int idx) {
 }
 
 /* Returns the sum of entries of the column that has index idx */
-float sumColumn(float square[][MAXN], int N, int idx) {
-    float sum = 0.0;
+double sumColumn(double square[][MAXN], int N, int idx) {
+    double sum = 0.0;
     int row;
 
     for (row = 0; row < N; row++) {
@@ -125,12 +128,12 @@ float sumColumn(float square[][MAXN], int N, int idx) {
 }
 
 /* Creates a random N*N Markov matrix */
-void fillSquare(float square[][MAXN], int N) {
+void fillSquare(double square[][MAXN], int N) {
     int k, j;
-    float Max, E, sumRowVal, sumColumnVal;
+    double Max, E, sumRowVal, sumColumnVal;
 
     /* arrays for the sum of each row/column */
-    float sumRowVector[MAXN] = {0.0}, sumColumnVector[MAXN] = {0.0};
+    double sumRowVector[MAXN] = {0.0}, sumColumnVector[MAXN] = {0.0};
 
     /* initialize matrix to 0 */
     for (k = 0; k < N; k++) {
@@ -151,15 +154,12 @@ void fillSquare(float square[][MAXN], int N) {
             else if (j == N - 1) {
                 E = 1 - sumRowVal;
             }
-            else if (Max < 0.0001) {
-                E = (float) rand() / RAND_MAX;
+            else if (Max < DBL_MIN) {
+                E = (double) rand() / RAND_MAX;
             }
             else {
-                E = (1 - Max) * ((float) rand() / RAND_MAX);
+                E = (1 - Max) * ((double) rand() / RAND_MAX);
             }
-            
-            /* 4 decimal digits */
-            E = 0.0001 * ((int) (10000 * E));
 
             square[k][j] = E;
             sumRowVector[k] += E;
@@ -169,12 +169,12 @@ void fillSquare(float square[][MAXN], int N) {
 }
 
 /* Prints a N*N matrix to stdout */
-void printSquare(float square[][MAXN], int N) {
+void printSquare(double square[][MAXN], int N) {
     int i, j;
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            printf("%.4f ", square[i][j]);
+            printf("%f ", square[i][j]);
         }
         printf("\n");
     }
@@ -182,9 +182,9 @@ void printSquare(float square[][MAXN], int N) {
 
 /* Checks whether the row that has index idx is a valid Markov matrix row.
 Returns: 1 if row is valid, 0 otherwise. */
-int invalidRow(float square[][MAXN], int N, int idx) {
+int invalidRow(double square[][MAXN], int N, int idx) {
     int column;
-    float sumRowVal;
+    double sumRowVal;
 
     for (column = 0; column < N; column++) {
         if (square[idx][column] < 0 || square[idx][column] > 1) {
@@ -192,14 +192,14 @@ int invalidRow(float square[][MAXN], int N, int idx) {
         }
     }
     sumRowVal = sumRow(square, N, idx);
-    return sumRowVal > 1.00001 || sumRowVal < 0.99999;
+    return fabs(sumRowVal - 1) > THRESHOLD;
 }
 
 /* Checks whether column with index idx is a valid Markov matrix column.
 Returns: 1 if column is valid, 0 otherwise. */
-int invalidColumn(float square[][MAXN], int N, int idx) {
+int invalidColumn(double square[][MAXN], int N, int idx) {
     int row;
-    float sumColumnVal;
+    double sumColumnVal;
 
     for (row = 0; row < N; row++) {
         if (square[row][idx] < 0 || square[row][idx] > 1) {
@@ -207,5 +207,5 @@ int invalidColumn(float square[][MAXN], int N, int idx) {
         }
     }
     sumColumnVal = sumColumn(square, N, idx);
-    return sumColumnVal > 1.00001 || sumColumnVal < 0.99999;
+    return fabs(sumColumnVal - 1) > THRESHOLD;
 }

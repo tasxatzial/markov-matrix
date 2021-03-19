@@ -7,6 +7,9 @@ You can use the program in two ways:
 * To create doubly stochastic matrices.
 * To check whether a matrix is doubly stochastic.
 
+This is a very simple program which always allocates a two-dimensional 10x10 array.
+Therefore matrices up to 10x10 can be generated and checked if they are valid.
+
 ## Compile
 
 Use the provided Makefile:
