@@ -36,6 +36,6 @@ Examples:
 ./markov -check < input_file
 ```
 
-## Sample files
+## Tests
 
-See [tests](tests).
+See [tests](tests). Two input .in files are provided and their corresponding .out files.
