@@ -61,7 +61,8 @@ int main(int argc, char **argv) {
     }
 
     else {
-        printf("a.out -create {positive integer number}\n");
+        printf("Create matrix:\n./markov -create {positive integer}\n");
+        printf("Check matrix:\n./markov -check < input_file\n");
     }
     return 0;
 }
