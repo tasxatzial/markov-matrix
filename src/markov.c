@@ -31,7 +31,8 @@ int main(int argc, char **argv) {
     if (argc == 3) {
         if (strcmp(argv[1], "-create") == 0) {
             N = atoi(argv[2]);
-            if (N > MAXN) {
+            if (N > MAXN || N <= 0) {
+                printf("%d: dimensions out of bounds\n", N);
                 return 0;
             }
             srand(time(0));
@@ -51,7 +52,8 @@ int main(int argc, char **argv) {
     else if (argc == 2) {
         if (strcmp(argv[1], "-check") == 0) {
             scanf("%d", &N);
-            if (N > MAXN) {
+            if (N > MAXN || N <= 0) {
+                printf("%d: dimensions out of bounds\n", N);
                 return 0;
             }
             readSquare(square, N);
@@ -61,7 +63,7 @@ int main(int argc, char **argv) {
     }
 
     else {
-        printf("Create matrix:\n./markov -create {positive integer}\n");
+        printf("Create matrix (max N = 10):\n./markov -create <N>\n");
         printf("Check matrix:\n./markov -check < input_file\n");
     }
     return 0;
